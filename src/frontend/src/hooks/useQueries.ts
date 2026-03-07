@@ -12,9 +12,12 @@ export function useGetAllStations() {
     queryKey: ["stations"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllStations();
+      const result = await actor.getAllStations();
+      return result;
     },
     enabled: !!actor && !isFetching,
+    retry: 3,
+    retryDelay: 1000,
   });
 }
 
@@ -25,9 +28,13 @@ export function useSearchByCity(city: string, enabled: boolean) {
     queryKey: ["stations", "search", city],
     queryFn: async () => {
       if (!actor || !city.trim()) return [];
-      return actor.searchByCity(city.trim());
+      // Backend searchByCity already filters by isActive
+      const result = await actor.searchByCity(city.trim());
+      return result;
     },
     enabled: !!actor && !isFetching && enabled && city.trim().length > 0,
+    retry: 3,
+    retryDelay: 1000,
   });
 }
 

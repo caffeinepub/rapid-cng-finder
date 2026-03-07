@@ -15,7 +15,11 @@ export default function SearchPage() {
   const [activeCity, setActiveCity] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: allStations = [], isLoading: loadingAll } = useGetAllStations();
+  const {
+    data: allStations = [],
+    isLoading: loadingAll,
+    isFetching: fetchingAll,
+  } = useGetAllStations();
   const {
     data: searchResults = [],
     isLoading: loadingSearch,
@@ -23,10 +27,13 @@ export default function SearchPage() {
   } = useSearchByCity(activeCity, activeCity.length > 0);
 
   const isSearching = activeCity.length > 0;
-  const isLoading = isSearching ? loadingSearch || fetchingSearch : loadingAll;
+  const isLoading = isSearching
+    ? loadingSearch || fetchingSearch
+    : loadingAll || fetchingAll;
 
-  const rawStations = isSearching ? searchResults : allStations;
-  const stations = rawStations.filter((s) => s.isActive);
+  // When showing all stations, show all (active + inactive so nothing is hidden).
+  // When searching, backend already filters by isActive so use results directly.
+  const stations = isSearching ? searchResults : allStations;
 
   const handleSearch = () => {
     const trimmed = searchInput.trim();
@@ -282,7 +289,7 @@ export default function SearchPage() {
                 <p className="text-muted-foreground font-body text-sm max-w-xs mx-auto">
                   {isSearching
                     ? "Try a different city name or check the spelling."
-                    : "No CNG stations have been added yet."}
+                    : 'No CNG stations have been added yet. Log in as admin and use "Load Sample Data" to add stations.'}
                 </p>
                 {isSearching && (
                   <Button
