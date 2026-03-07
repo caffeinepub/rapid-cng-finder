@@ -241,14 +241,14 @@ actor {
     stations.sort();
   };
 
-  // Search by City (Case-Insensitive, Public - no auth required)
+  // Search by City (Public - no auth required, NO isActive filtering)
   public query func searchByCity(city : Text) : async [CNGStation] {
-    let activeStations = stationsMap.values().toArray().filter(
+    let matchingStations = stationsMap.values().toArray().filter(
       func(station : CNGStation) : Bool {
-        station.isActive and containsIgnoreCase(station.city, city)
+        containsIgnoreCase(station.city, city);
       }
     );
-    activeStations.sort();
+    matchingStations.sort();
   };
 
   // Preload Sample Data (Admin Only)
