@@ -1,16 +1,14 @@
 import Text "mo:core/Text";
-import Iter "mo:core/Iter";
 import Order "mo:core/Order";
 import Array "mo:core/Array";
-import List "mo:core/List";
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
+import Iter "mo:core/Iter";
+import Char "mo:core/Char";
+import Nat "mo:core/Nat";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Nat "mo:core/Nat";
-import Nat32 "mo:core/Nat32";
-import Char "mo:core/Char";
 
 actor {
   // Initialize the access control state
@@ -81,30 +79,70 @@ actor {
     };
   };
 
-  // Compare characters case-insensitively
-  func compareTextIgnoreCase(text1 : Text, text2 : Text) : Bool {
-    let chars1 = text1.toArray();
-    let chars2 = text2.toArray();
-    if (chars1.size() != chars2.size()) {
-      return false;
+  // Convert a character to uppercase (ASCII only)
+  func charToUpper(c : Char) : Char {
+    switch (c) {
+      case ('a') { 'A' };
+      case ('b') { 'B' };
+      case ('c') { 'C' };
+      case ('d') { 'D' };
+      case ('e') { 'E' };
+      case ('f') { 'F' };
+      case ('g') { 'G' };
+      case ('h') { 'H' };
+      case ('i') { 'I' };
+      case ('j') { 'J' };
+      case ('k') { 'K' };
+      case ('l') { 'L' };
+      case ('m') { 'M' };
+      case ('n') { 'N' };
+      case ('o') { 'O' };
+      case ('p') { 'P' };
+      case ('q') { 'Q' };
+      case ('r') { 'R' };
+      case ('s') { 'S' };
+      case ('t') { 'T' };
+      case ('u') { 'U' };
+      case ('v') { 'V' };
+      case ('w') { 'W' };
+      case ('x') { 'X' };
+      case ('y') { 'Y' };
+      case ('z') { 'Z' };
+      case (_) { c };
     };
+  };
 
-    let compareChar = func(c1 : Char, c2 : Char) : Bool {
-      let char1Upper = if (c1 >= 'a' and c1 <= 'z') {
-        Char.fromNat32(c1.toNat32() - 32);
-      } else { c1 };
-      let char2Upper = if (c2 >= 'a' and c2 <= 'z') {
-        Char.fromNat32(c2.toNat32() - 32);
-      } else { c2 };
-      char1Upper == char2Upper;
-    };
+  // Convert a text to uppercase (ASCII only)
+  func textToUpper(t : Text) : Text {
+    let chars = t.toArray();
+    let upperChars = chars.map(charToUpper);
+    Text.fromArray(upperChars);
+  };
 
-    for (i in Nat.range(0, chars1.size())) {
-      if (not compareChar(chars1[i], chars2[i])) {
-        return false;
+  // Check if haystack contains needle (case-insensitive, ASCII only)
+  func containsIgnoreCase(haystack : Text, needle : Text) : Bool {
+    if (needle.size() == 0) { return true };
+
+    let haystackUpper = textToUpper(haystack);
+    let needleUpper = textToUpper(needle);
+
+    let haystackArray = haystackUpper.toArray();
+    let needleArray = needleUpper.toArray();
+    let haystackLen = haystackArray.size();
+    let needleLen = needleArray.size();
+
+    if (needleLen > haystackLen) { return false };
+
+    for (i in Nat.range(0, haystackLen - needleLen + 1)) {
+      var match = true;
+      for (j in Nat.range(0, needleLen)) {
+        if (haystackArray[i + j] != needleArray[j]) {
+          match := false;
+        };
       };
+      if (match) { return true };
     };
-    true;
+    false;
   };
 
   // Add Station (Admin Only)
@@ -157,7 +195,7 @@ actor {
       Runtime.trap("Unauthorized: Only admins can update stations");
     };
     validateStationData(name, city);
-    
+
     switch (stationsMap.get(id)) {
       case (null) { Runtime.trap("Station not found") };
       case (?existing) {
@@ -182,7 +220,7 @@ actor {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can delete stations");
     };
-    
+
     switch (stationsMap.get(id)) {
       case (null) { Runtime.trap("Station not found") };
       case (_) { stationsMap.remove(id) };
@@ -205,12 +243,12 @@ actor {
 
   // Search by City (Case-Insensitive, Public - no auth required)
   public query func searchByCity(city : Text) : async [CNGStation] {
-    let results = stationsMap.values().toArray().filter(
+    let activeStations = stationsMap.values().toArray().filter(
       func(station : CNGStation) : Bool {
-        compareTextIgnoreCase(station.city, city);
-      },
+        station.isActive and containsIgnoreCase(station.city, city)
+      }
     );
-    results.sort();
+    activeStations.sort();
   };
 
   // Preload Sample Data (Admin Only)

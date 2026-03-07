@@ -40,7 +40,13 @@ export default function SearchPage() {
     inputRef.current?.focus();
   };
 
-  const popularCities = ["Mumbai", "Delhi", "Pune", "Ahmedabad", "Surat"];
+  const popularCities = [
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Peshawar",
+    "Faisalabad",
+  ];
 
   return (
     <div>
