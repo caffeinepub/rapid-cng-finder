@@ -140,6 +140,17 @@
   border-radius: var(--radius) 0 0 var(--radius);
 }
 
+/* ── Route banner ── */
+.route-banner {
+  background: linear-gradient(
+    135deg,
+    oklch(0.96 0.03 145 / 0.7) 0%,
+    oklch(0.97 0.015 160 / 0.5) 100%
+  );
+  border: 1px solid oklch(var(--primary) / 0.15);
+  backdrop-filter: blur(8px);
+}
+
 /* ── Smooth transitions ── */
 .station-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
