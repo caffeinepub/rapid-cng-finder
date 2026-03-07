@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Fonts ── */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("/assets/fonts/Outfit[wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* CNG Finder — Deep forest green + slate + crisp white */
+    --background: 0.98 0.004 120;
+    --foreground: 0.15 0.025 155;
+
+    --card: 1 0 0;
+    --card-foreground: 0.15 0.025 155;
+
+    --popover: 1 0 0;
+    --popover-foreground: 0.15 0.025 155;
+
+    /* Primary: deep forest green */
+    --primary: 0.38 0.13 145;
+    --primary-foreground: 0.98 0.004 120;
+
+    /* Secondary: soft sage */
+    --secondary: 0.94 0.02 140;
+    --secondary-foreground: 0.25 0.06 145;
+
+    --muted: 0.95 0.01 140;
+    --muted-foreground: 0.5 0.03 150;
+
+    /* Accent: bright lime green */
+    --accent: 0.88 0.12 142;
+    --accent-foreground: 0.18 0.08 145;
+
+    --destructive: 0.55 0.22 27;
+    --destructive-foreground: 0.98 0 0;
+
+    --border: 0.88 0.015 140;
+    --input: 0.9 0.01 140;
+    --ring: 0.38 0.13 145;
+
+    /* Status colors */
+    --status-open: 0.55 0.18 145;
+    --status-open-bg: 0.92 0.08 145;
+    --status-closed: 0.52 0.2 25;
+    --status-closed-bg: 0.95 0.06 25;
+
+    /* Brand gradient stop colors (used in CSS only) */
+    --hero-gradient-from: oklch(0.22 0.09 145);
+    --hero-gradient-to: oklch(0.12 0.05 200);
+
+    --chart-1: 0.55 0.18 145;
+    --chart-2: 0.6 0.16 200;
+    --chart-3: 0.65 0.2 100;
+    --chart-4: 0.7 0.18 60;
+    --chart-5: 0.75 0.2 30;
+
+    --sidebar: 0.98 0.004 120;
+    --sidebar-foreground: 0.15 0.025 155;
+    --sidebar-primary: 0.38 0.13 145;
+    --sidebar-primary-foreground: 0.98 0.004 120;
+    --sidebar-accent: 0.94 0.02 140;
+    --sidebar-accent-foreground: 0.25 0.06 145;
+    --sidebar-border: 0.88 0.015 140;
+    --sidebar-ring: 0.38 0.13 145;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+/* ── Hero background pattern ── */
+.hero-bg {
+  background: var(--hero-gradient-from);
+  background-image:
+    radial-gradient(circle at 20% 50%, oklch(0.35 0.15 155 / 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, oklch(0.28 0.1 180 / 0.3) 0%, transparent 40%),
+    radial-gradient(circle at 60% 80%, oklch(0.18 0.08 130 / 0.5) 0%, transparent 40%);
+  background-color: oklch(0.18 0.07 145);
+}
+
+/* ── Hex pattern overlay ── */
+.hex-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l15 9v18l-15 9-15-9V9z' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cpath d='M60 0l15 9v18l-15 9-15-9V9z' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cpath d='M0 0l15 9v18l-15 9-15-9V9z' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cpath d='M45 26l15 9v18l-15 9-15-9V35z' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3Cpath d='M15 26l15 9v18l-15 9-15-9V35z' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* ── Glass search bar ── */
+.glass-search {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ── Station card status accent ── */
+.card-open::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: oklch(var(--status-open));
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.card-closed::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: oklch(var(--status-closed));
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+/* ── Smooth transitions ── */
+.station-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.station-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px -8px oklch(0.38 0.13 145 / 0.2);
+}
