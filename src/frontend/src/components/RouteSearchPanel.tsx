@@ -19,32 +19,205 @@ interface PresetRoute {
 }
 
 const PRESET_ROUTES: PresetRoute[] = [
+  // NH-33
   {
     from: "Ranchi",
     to: "Hazaribagh",
     label: "Ranchi → Hazaribagh",
     distance: "~65 km",
-    highway: "NH33",
-    intermediate: ["Ramgarh"],
-    allCities: ["Ranchi", "Ramgarh", "Hazaribagh"],
+    highway: "NH-33",
+    allCities: [
+      "Ranchi",
+      "Ormajhi",
+      "Demotand",
+      "Hesagarha",
+      "Charhi",
+      "Ramgarh",
+      "Hazaribagh",
+    ],
   },
+  // NH-319
+  {
+    from: "Ranchi",
+    to: "Patna",
+    label: "Ranchi → Patna",
+    distance: "~330 km",
+    highway: "NH-319",
+    allCities: [
+      "Ranchi",
+      "Ormajhi",
+      "Demotand",
+      "Hesagarha",
+      "Charhi",
+      "Ramgarh",
+      "Bokaro",
+      "Dhanbad",
+      "Koderma",
+      "Gaya",
+      "Jehanabad",
+      "Patna",
+    ],
+  },
+  // NH-19 long
+  {
+    from: "Delhi",
+    to: "Kolkata",
+    label: "Delhi → Kolkata",
+    distance: "~1475 km",
+    highway: "NH-19",
+    allCities: [
+      "Delhi",
+      "Noida",
+      "Mathura",
+      "Agra",
+      "Kanpur",
+      "Prayagraj",
+      "Varanasi",
+      "Sasaram",
+      "Dehri",
+      "Gaya",
+      "Asansol",
+      "Durgapur",
+      "Burdwan",
+      "Kolkata",
+    ],
+  },
+  // NH-19 short
   {
     from: "Delhi",
     to: "Agra",
     label: "Delhi → Agra",
     distance: "~230 km",
-    highway: "NH19",
-    intermediate: ["Noida", "Mathura"],
-    allCities: ["Delhi", "Noida", "Mathura", "Agra"],
+    highway: "NH-19",
+    allCities: ["Delhi", "Faridabad", "Palwal", "Mathura", "Vrindavan", "Agra"],
+  },
+  // NH-44
+  {
+    from: "Delhi",
+    to: "Bangalore",
+    label: "Delhi → Bangalore",
+    distance: "~2100 km",
+    highway: "NH-44",
+    allCities: ["Delhi", "Gwalior", "Nagpur", "Hyderabad", "Bangalore"],
+  },
+  {
+    from: "Bangalore",
+    to: "Chennai",
+    label: "Bangalore → Chennai",
+    distance: "~345 km",
+    highway: "NH-44",
+    allCities: ["Bangalore", "Chennai"],
+  },
+  // NH-48
+  {
+    from: "Delhi",
+    to: "Mumbai",
+    label: "Delhi → Mumbai",
+    distance: "~1420 km",
+    highway: "NH-48",
+    allCities: [
+      "Delhi",
+      "Gurgaon",
+      "Jaipur",
+      "Ajmer",
+      "Udaipur",
+      "Ahmedabad",
+      "Vadodara",
+      "Surat",
+      "Mumbai",
+    ],
   },
   {
     from: "Mumbai",
     to: "Pune",
     label: "Mumbai → Pune",
     distance: "~150 km",
-    highway: "NH48",
-    intermediate: ["Navi Mumbai", "Lonavala"],
-    allCities: ["Mumbai", "Navi Mumbai", "Lonavala", "Pune"],
+    highway: "NH-48",
+    allCities: [
+      "Mumbai",
+      "Thane",
+      "Navi Mumbai",
+      "Khopoli",
+      "Lonavala",
+      "Khandala",
+      "Pune",
+    ],
+  },
+  // NH-27
+  {
+    from: "Ahmedabad",
+    to: "Raipur",
+    label: "Ahmedabad → Raipur",
+    distance: "~1100 km",
+    highway: "NH-27",
+    allCities: [
+      "Ahmedabad",
+      "Rajkot",
+      "Indore",
+      "Bhopal",
+      "Jabalpur",
+      "Raipur",
+    ],
+  },
+  {
+    from: "Raipur",
+    to: "Patna",
+    label: "Raipur → Patna",
+    distance: "~700 km",
+    highway: "NH-27",
+    allCities: ["Raipur", "Ranchi", "Patna"],
+  },
+  // NH-31
+  {
+    from: "Lucknow",
+    to: "Guwahati",
+    label: "Lucknow → Guwahati",
+    distance: "~1400 km",
+    highway: "NH-31",
+    allCities: [
+      "Lucknow",
+      "Gorakhpur",
+      "Muzaffarpur",
+      "Patna",
+      "Purnea",
+      "Siliguri",
+      "Guwahati",
+    ],
+  },
+  // NH-58
+  {
+    from: "Delhi",
+    to: "Rishikesh",
+    label: "Delhi → Rishikesh",
+    distance: "~260 km",
+    highway: "NH-58",
+    allCities: ["Delhi", "Ghaziabad", "Meerut", "Haridwar", "Rishikesh"],
+  },
+  // NH-24
+  {
+    from: "Delhi",
+    to: "Lucknow",
+    label: "Delhi → Lucknow",
+    distance: "~550 km",
+    highway: "NH-24",
+    allCities: ["Delhi", "Ghaziabad", "Moradabad", "Bareilly", "Lucknow"],
+  },
+  // NH-52
+  {
+    from: "Pathankot",
+    to: "Haridwar",
+    label: "Pathankot → Haridwar",
+    distance: "~420 km",
+    highway: "NH-52",
+    allCities: ["Pathankot", "Jalandhar", "Ambala", "Chandigarh", "Haridwar"],
+  },
+  {
+    from: "Jaipur",
+    to: "Kota",
+    label: "Jaipur → Kota",
+    distance: "~250 km",
+    highway: "NH-52",
+    allCities: ["Jaipur", "Kota"],
   },
 ];
 
@@ -97,20 +270,33 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
 
   const loading = isLoading || isFetching;
 
-  // Group all stations by city
+  // Group all stations by city (keyed by trimmed original city name)
+  // Also build a lowercase lookup so preset city names match stored data exactly
   const stationsByCity = useMemo(() => {
+    // Map: original city name -> stations
     const map = new Map<string, CNGStation[]>();
+    // Map: lowercase city name -> original city name (first seen)
+    const lowerToOriginal = new Map<string, string>();
+
     for (const station of allStations) {
-      const existing = map.get(station.city) ?? [];
-      map.set(station.city, [...existing, station]);
+      const originalCity = station.city.trim();
+      const lowerCity = originalCity.toLowerCase();
+      // Use the first seen original casing as the canonical key
+      const canonicalKey = lowerToOriginal.get(lowerCity) ?? originalCity;
+      if (!lowerToOriginal.has(lowerCity)) {
+        lowerToOriginal.set(lowerCity, canonicalKey);
+      }
+      const existing = map.get(canonicalKey) ?? [];
+      map.set(canonicalKey, [...existing, station]);
     }
-    return map;
+    return { map, lowerToOriginal };
   }, [allStations]);
 
   // Build ordered group list for active route
   const groupedResults = useMemo(() => {
     if (!activeRoute || !searchActive) return [];
 
+    const { map, lowerToOriginal } = stationsByCity;
     const preset = activeRoute.preset;
     const orderedCities = preset?.allCities ?? [
       activeRoute.from,
@@ -119,25 +305,41 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
     ];
 
     const routeGroups: Array<{ city: string; stations: CNGStation[] }> = [];
-    const seenCities = new Set<string>();
+    const seenKeys = new Set<string>();
 
-    // Cities in route order (always first)
+    // Only show cities that are part of the route (in order)
     for (const city of orderedCities) {
-      const stations = stationsByCity.get(city) ?? [];
-      routeGroups.push({ city, stations });
-      seenCities.add(city);
-    }
-
-    // Always append ALL remaining cities that have stations, sorted alphabetically
-    const remainingGroups: Array<{ city: string; stations: CNGStation[] }> = [];
-    for (const [city, stations] of stationsByCity.entries()) {
-      if (!seenCities.has(city)) {
-        remainingGroups.push({ city, stations });
+      // Resolve the stored canonical key via case-insensitive lookup
+      const canonicalKey =
+        lowerToOriginal.get(city.trim().toLowerCase()) ?? city.trim();
+      if (!seenKeys.has(canonicalKey)) {
+        const stations = map.get(canonicalKey) ?? [];
+        routeGroups.push({ city, stations });
+        seenKeys.add(canonicalKey);
       }
     }
-    remainingGroups.sort((a, b) => a.city.localeCompare(b.city));
 
-    return [...routeGroups, ...remainingGroups];
+    // For custom (non-preset) routes, also include cities that partially match from/to
+    if (!preset) {
+      const fromLower = activeRoute.from.trim().toLowerCase();
+      const toLower = activeRoute.to.trim().toLowerCase();
+      for (const [canonicalKey, stations] of map.entries()) {
+        if (!seenKeys.has(canonicalKey)) {
+          const cityLower = canonicalKey.toLowerCase();
+          if (
+            cityLower.includes(fromLower) ||
+            fromLower.includes(cityLower) ||
+            cityLower.includes(toLower) ||
+            toLower.includes(cityLower)
+          ) {
+            routeGroups.push({ city: canonicalKey, stations });
+            seenKeys.add(canonicalKey);
+          }
+        }
+      }
+    }
+
+    return routeGroups;
   }, [activeRoute, searchActive, stationsByCity]);
 
   const totalAll = groupedResults.reduce(
@@ -238,22 +440,33 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.35 }}
-        className="flex flex-wrap items-center justify-center gap-2 mt-3"
+        className="mt-3"
       >
-        <span className="text-white/40 text-xs font-body">Quick routes:</span>
-        {PRESET_ROUTES.map((preset, idx) => (
-          <button
-            key={preset.label}
-            type="button"
-            data-ocid={`route.item.${idx + 1}`}
-            onClick={() => handlePresetClick(preset)}
-            className="text-xs text-white/70 hover:text-white font-body px-2.5 py-1 rounded-full border border-white/20 hover:border-white/50 hover:bg-white/10 transition-all flex items-center gap-1"
-          >
-            <Route className="w-3 h-3" />
-            {preset.label}
-            <span className="text-white/40">{preset.distance}</span>
-          </button>
-        ))}
+        <div className="flex items-center gap-1.5 mb-2 px-1">
+          <Route className="w-3 h-3 text-white/40 shrink-0" />
+          <span className="text-white/40 text-xs font-body shrink-0">
+            Quick NH routes:
+          </span>
+        </div>
+        <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+          {PRESET_ROUTES.map((preset, idx) => (
+            <button
+              key={preset.label}
+              type="button"
+              data-ocid={`route.item.${idx + 1}`}
+              onClick={() => handlePresetClick(preset)}
+              className="shrink-0 text-xs text-white/70 hover:text-white font-body px-2.5 py-1.5 rounded-full border border-white/20 hover:border-white/50 hover:bg-white/10 transition-all flex items-center gap-1.5"
+            >
+              <span className="bg-white/15 text-white/90 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-sm leading-none">
+                {preset.highway}
+              </span>
+              <span>{preset.label}</span>
+              <span className="text-white/35 text-[10px]">
+                {preset.distance}
+              </span>
+            </button>
+          ))}
+        </div>
       </motion.div>
 
       {/* ── Results section ── */}

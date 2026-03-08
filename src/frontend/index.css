@@ -151,6 +151,17 @@
   backdrop-filter: blur(8px);
 }
 
+/* ── Scrollbar hide utility ── */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ── Smooth transitions ── */
 .station-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;

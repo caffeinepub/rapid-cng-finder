@@ -117,7 +117,14 @@ export interface backendInterface {
     addStation(name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteStation(id: bigint): Promise<void>;
-    getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]>;
+    getAllCitiesGrouped(): Promise<{
+        nh19: Array<[string, string]>;
+        nh44: Array<[string, string]>;
+        nh48: Array<[string, string]>;
+        pakistan: Array<[string, string]>;
+        other_india: Array<[string, string]>;
+        nh33_20: Array<[string, string]>;
+    }>;
     getAllStations(): Promise<Array<CNGStation>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -189,28 +196,25 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]> {
+    async getAllCitiesGrouped(): Promise<{
+        nh19: Array<[string, string]>;
+        nh44: Array<[string, string]>;
+        nh48: Array<[string, string]>;
+        pakistan: Array<[string, string]>;
+        other_india: Array<[string, string]>;
+        nh33_20: Array<[string, string]>;
+    }> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllCitiesGrouped();
-                return [
-                    result[0],
-                    result[1],
-                    result[2],
-                    result[3]
-                ];
+                return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getAllCitiesGrouped();
-            return [
-                result[0],
-                result[1],
-                result[2],
-                result[3]
-            ];
+            return result;
         }
     }
     async getAllStations(): Promise<Array<CNGStation>> {

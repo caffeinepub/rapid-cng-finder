@@ -1,29 +1,38 @@
 # Rapid CNG Finder
 
 ## Current State
-The app has a Route Search panel that queries only the specific cities named in a route (from, optional intermediate, to). For preset routes this means only 2-3 cities are queried. All CNG stations stored in the backend may not be shown if they belong to cities not explicitly listed in the route. The `preloadSampleData` function seeds stations in cities: Karachi, Lahore, Multan, Peshawar, Islamabad, Quetta, Faisalabad, Ranchi, Ramgarh, Hazaribagh, Delhi, Noida, Mathura, Agra, Mumbai, Navi Mumbai, Lonavala, Pune.
+A CNG station finder web app with:
+- Public search by city/route
+- Admin panel (Internet Identity login) to manage stations and load sample data
+- Multiple NH routes with CNG stations
+- Get Directions button (Google Maps)
+
+No PWA support -- the app cannot be installed on Android/iOS home screens.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Route search now fetches ALL stations from the backend and shows every station grouped by city along the route, not just the queried cities.
-- For preset routes, all cities in the route are shown in order (e.g. Ranchi → Ramgarh → Hazaribagh).
-- For custom routes (from/to typed by user), all stations from all cities are shown, grouped by city, filtered to those whose city name contains the from or to keyword (partial match).
-- A new "All Stations on Route" view that aggregates stations from every city that has at least one station and groups them in a clear city-by-city layout.
+- `manifest.webmanifest` in `public/` with app name, short name, theme color, background color, icons (192x192 and 512x512), display standalone, orientation portrait, start_url
+- `sw.js` (service worker) in `public/` for offline caching of app shell assets
+- PWA meta tags in `index.html`: theme-color, apple-touch-icon, apple-mobile-web-app-capable, description, manifest link
+- "Add to Home Screen" install prompt component in the React app that:
+  - Listens for the `beforeinstallprompt` event (Android/Chrome)
+  - Shows a banner/button prompting users to install
+  - Handles the iOS Safari case with a manual instruction tooltip
+  - Dismisses gracefully if user declines or already installed
+- Service worker registration in `main.tsx`
 
 ### Modify
-- `RouteSearchPanel`: Instead of querying individual cities via `useSearchByCity`, use `useGetAllStations` to get the full station list, then group stations by city and show all groups. For preset routes, order the city groups to match the route order. For custom routes, show all city groups with stations.
-- Preset route definitions expanded to include more intermediate cities where applicable (e.g. Delhi → Noida → Mathura → Agra; Mumbai → Navi Mumbai → Lonavala → Pune).
+- `index.html`: add all PWA meta tags and manifest link
+- `vite.config.js`: no changes needed (service worker handled manually via public/)
 
 ### Remove
-- The per-city query hooks (`useCitySearch` inside `RouteSearchPanel`) are replaced by a single `useGetAllStations` call with client-side grouping.
+- Nothing removed
 
 ## Implementation Plan
-1. Update `RouteSearchPanel.tsx`:
-   - Replace multi-city hook pattern with a single `useGetAllStations` call.
-   - For preset routes, define ordered city lists (all intermediate stops).
-   - Group all stations by city using client-side logic.
-   - For preset routes, order city groups to match the route.
-   - For custom routes (non-preset), show all city groups that have stations, sorted alphabetically or by total stations descending.
-   - Update stats to reflect all found stations.
-2. Expand `PRESET_ROUTES` intermediate arrays to cover all seeded sample cities per route.
+1. Create `public/manifest.webmanifest` with correct fields pointing to generated icons
+2. Create `public/sw.js` as a basic cache-first service worker for the app shell
+3. Update `index.html` to link manifest and add all required PWA meta tags
+4. Create `src/components/InstallPrompt.tsx` -- detects install eligibility, shows banner on Android and instructions on iOS
+5. Register service worker in `main.tsx`
+6. Mount `<InstallPrompt />` in `App.tsx`

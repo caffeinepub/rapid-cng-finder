@@ -34,7 +34,14 @@ export interface backendInterface {
     addStation(name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteStation(id: bigint): Promise<void>;
-    getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]>;
+    getAllCitiesGrouped(): Promise<{
+        nh19: Array<[string, string]>;
+        nh44: Array<[string, string]>;
+        nh48: Array<[string, string]>;
+        pakistan: Array<[string, string]>;
+        other_india: Array<[string, string]>;
+        nh33_20: Array<[string, string]>;
+    }>;
     getAllStations(): Promise<Array<CNGStation>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;

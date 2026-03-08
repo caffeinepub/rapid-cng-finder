@@ -51,10 +51,14 @@ export const idlService = IDL.Service({
   'getAllCitiesGrouped' : IDL.Func(
       [],
       [
-        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        IDL.Record({
+          'nh19' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          'nh44' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          'nh48' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          'pakistan' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          'other_india' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          'nh33_20' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        }),
       ],
       ['query'],
     ),
@@ -136,10 +140,14 @@ export const idlFactory = ({ IDL }) => {
     'getAllCitiesGrouped' : IDL.Func(
         [],
         [
-          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          IDL.Record({
+            'nh19' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+            'nh44' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+            'nh48' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+            'pakistan' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+            'other_india' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+            'nh33_20' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          }),
         ],
         ['query'],
       ),

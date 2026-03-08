@@ -37,12 +37,14 @@ export interface _SERVICE {
   'deleteStation' : ActorMethod<[bigint], undefined>,
   'getAllCitiesGrouped' : ActorMethod<
     [],
-    [
-      Array<[string, string]>,
-      Array<[string, string]>,
-      Array<[string, string]>,
-      Array<[string, string]>,
-    ]
+    {
+      'nh19' : Array<[string, string]>,
+      'nh44' : Array<[string, string]>,
+      'nh48' : Array<[string, string]>,
+      'pakistan' : Array<[string, string]>,
+      'other_india' : Array<[string, string]>,
+      'nh33_20' : Array<[string, string]>,
+    }
   >,
   'getAllStations' : ActorMethod<[], Array<CNGStation>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,

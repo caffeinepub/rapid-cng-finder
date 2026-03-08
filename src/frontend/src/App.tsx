@@ -5,6 +5,7 @@ import { useState } from "react";
 import AdminDashboard from "./components/AdminDashboard";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import InstallPrompt from "./components/InstallPrompt";
 import SearchPage from "./components/SearchPage";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { useIsCallerAdmin } from "./hooks/useQueries";
@@ -86,6 +87,7 @@ export default function App() {
       </main>
       <Footer />
       <Toaster position="bottom-right" richColors />
+      <InstallPrompt />
     </div>
   );
 }
