@@ -35,6 +35,15 @@ export interface _SERVICE {
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deleteStation' : ActorMethod<[bigint], undefined>,
+  'getAllCitiesGrouped' : ActorMethod<
+    [],
+    [
+      Array<[string, string]>,
+      Array<[string, string]>,
+      Array<[string, string]>,
+      Array<[string, string]>,
+    ]
+  >,
   'getAllStations' : ActorMethod<[], Array<CNGStation>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
@@ -44,6 +53,7 @@ export interface _SERVICE {
   'preloadSampleData' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'searchByCity' : ActorMethod<[string], Array<CNGStation>>,
+  'searchByPriceRange' : ActorMethod<[number, number], Array<CNGStation>>,
   'updateStation' : ActorMethod<
     [
       bigint,

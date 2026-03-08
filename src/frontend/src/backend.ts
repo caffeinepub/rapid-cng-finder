@@ -117,6 +117,7 @@ export interface backendInterface {
     addStation(name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteStation(id: bigint): Promise<void>;
+    getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]>;
     getAllStations(): Promise<Array<CNGStation>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -126,6 +127,7 @@ export interface backendInterface {
     preloadSampleData(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchByCity(city: string): Promise<Array<CNGStation>>;
+    searchByPriceRange(minPrice: number, maxPrice: number): Promise<Array<CNGStation>>;
     updateStation(id: bigint, name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<void>;
 }
 import type { CNGStation as _CNGStation, StationStatus as _StationStatus, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
@@ -185,6 +187,30 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.deleteStation(arg0);
             return result;
+        }
+    }
+    async getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllCitiesGrouped();
+                return [
+                    result[0],
+                    result[1],
+                    result[2],
+                    result[3]
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllCitiesGrouped();
+            return [
+                result[0],
+                result[1],
+                result[2],
+                result[3]
+            ];
         }
     }
     async getAllStations(): Promise<Array<CNGStation>> {
@@ -310,6 +336,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.searchByCity(arg0);
+            return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async searchByPriceRange(arg0: number, arg1: number): Promise<Array<CNGStation>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.searchByPriceRange(arg0, arg1);
+                return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.searchByPriceRange(arg0, arg1);
             return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
         }
     }

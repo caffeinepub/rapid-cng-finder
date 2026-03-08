@@ -34,6 +34,7 @@ export interface backendInterface {
     addStation(name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteStation(id: bigint): Promise<void>;
+    getAllCitiesGrouped(): Promise<[Array<[string, string]>, Array<[string, string]>, Array<[string, string]>, Array<[string, string]>]>;
     getAllStations(): Promise<Array<CNGStation>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -43,5 +44,6 @@ export interface backendInterface {
     preloadSampleData(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchByCity(city: string): Promise<Array<CNGStation>>;
+    searchByPriceRange(minPrice: number, maxPrice: number): Promise<Array<CNGStation>>;
     updateStation(id: bigint, name: string, address: string, city: string, operatingHours: string, pricePerKg: number, status: StationStatus, phone: string, isActive: boolean): Promise<void>;
 }

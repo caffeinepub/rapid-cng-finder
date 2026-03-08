@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, ExternalLink, MapPin, Route } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
-import { useSearchByCity } from "../hooks/useQueries";
+import { type CNGStation, useGetAllStations } from "../hooks/useQueries";
 import StationCard from "./StationCard";
 
 // ── Route definitions ─────────────────────────────────────────────
@@ -15,6 +15,7 @@ interface PresetRoute {
   distance: string;
   highway: string;
   intermediate?: string[];
+  allCities?: string[];
 }
 
 const PRESET_ROUTES: PresetRoute[] = [
@@ -25,6 +26,7 @@ const PRESET_ROUTES: PresetRoute[] = [
     distance: "~65 km",
     highway: "NH33",
     intermediate: ["Ramgarh"],
+    allCities: ["Ranchi", "Ramgarh", "Hazaribagh"],
   },
   {
     from: "Delhi",
@@ -32,6 +34,8 @@ const PRESET_ROUTES: PresetRoute[] = [
     label: "Delhi → Agra",
     distance: "~230 km",
     highway: "NH19",
+    intermediate: ["Noida", "Mathura"],
+    allCities: ["Delhi", "Noida", "Mathura", "Agra"],
   },
   {
     from: "Mumbai",
@@ -39,6 +43,8 @@ const PRESET_ROUTES: PresetRoute[] = [
     label: "Mumbai → Pune",
     distance: "~150 km",
     highway: "NH48",
+    intermediate: ["Navi Mumbai", "Lonavala"],
+    allCities: ["Mumbai", "Navi Mumbai", "Lonavala", "Pune"],
   },
 ];
 
@@ -51,21 +57,12 @@ function findPreset(from: string, to: string): PresetRoute | undefined {
   );
 }
 
-// ── City group search hook ────────────────────────────────────────
-function useCitySearch(city: string, enabled: boolean) {
-  return useSearchByCity(city, enabled && city.trim().length > 0);
-}
-
-// ── Main component ────────────────────────────────────────────────
-interface RouteSearchPanelProps {
-  autoLoad?: { from: string; to: string };
-}
-
 function buildCityList(
   from: string,
   to: string,
   preset?: PresetRoute,
 ): string[] {
+  if (preset?.allCities) return preset.allCities;
   const cities = [from.trim()];
   if (preset?.intermediate) cities.push(...preset.intermediate);
   cities.push(to.trim());
@@ -79,6 +76,11 @@ function initRouteState(autoLoad?: { from: string; to: string }) {
   return { from: autoLoad.from, to: autoLoad.to, cities, preset };
 }
 
+// ── Main component ────────────────────────────────────────────────
+interface RouteSearchPanelProps {
+  autoLoad?: { from: string; to: string };
+}
+
 export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
   const [fromCity, setFromCity] = useState(autoLoad?.from ?? "");
   const [toCity, setToCity] = useState(autoLoad?.to ?? "");
@@ -90,63 +92,62 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
     preset?: PresetRoute;
   } | null>(() => initRouteState(autoLoad));
 
-  // Gather all unique cities from the active route
-  const routeCities = activeRoute?.cities ?? [];
+  // Fetch ALL stations once and do client-side grouping
+  const { data: allStations = [], isLoading, isFetching } = useGetAllStations();
 
-  // Query each city independently
-  const fromResults = useCitySearch(
-    routeCities[0] ?? "",
-    searchActive && routeCities.length >= 1,
-  );
-  const midResults = useCitySearch(
-    routeCities.length === 3 ? routeCities[1] : "",
-    searchActive && routeCities.length === 3,
-  );
-  const toResults = useCitySearch(
-    routeCities[routeCities.length - 1] ?? "",
-    searchActive && routeCities.length >= 2,
-  );
+  const loading = isLoading || isFetching;
 
-  const isLoading =
-    fromResults.isLoading ||
-    fromResults.isFetching ||
-    (routeCities.length === 3 &&
-      (midResults.isLoading || midResults.isFetching)) ||
-    toResults.isLoading ||
-    toResults.isFetching;
+  // Group all stations by city
+  const stationsByCity = useMemo(() => {
+    const map = new Map<string, CNGStation[]>();
+    for (const station of allStations) {
+      const existing = map.get(station.city) ?? [];
+      map.set(station.city, [...existing, station]);
+    }
+    return map;
+  }, [allStations]);
 
-  // Build grouped results per city
+  // Build ordered group list for active route
   const groupedResults = useMemo(() => {
-    if (!activeRoute) return [];
-    const groups: Array<{
-      city: string;
-      stations: typeof fromResults.data;
-    }> = [];
+    if (!activeRoute || !searchActive) return [];
 
-    routeCities.forEach((city, idx) => {
-      let data: typeof fromResults.data;
-      if (idx === 0) data = fromResults.data;
-      else if (idx === 1 && routeCities.length === 3) data = midResults.data;
-      else data = toResults.data;
+    const preset = activeRoute.preset;
+    const orderedCities = preset?.allCities ?? [
+      activeRoute.from,
+      ...(preset?.intermediate ?? []),
+      activeRoute.to,
+    ];
 
-      groups.push({ city, stations: data ?? [] });
-    });
+    const groups: Array<{ city: string; stations: CNGStation[] }> = [];
+    const seenCities = new Set<string>();
+
+    // Cities in route order
+    for (const city of orderedCities) {
+      const stations = stationsByCity.get(city) ?? [];
+      groups.push({ city, stations });
+      seenCities.add(city);
+    }
+
+    // For custom routes (no preset), also show all other cities that have stations
+    if (!preset) {
+      for (const [city, stations] of stationsByCity.entries()) {
+        if (!seenCities.has(city)) {
+          groups.push({ city, stations });
+        }
+      }
+      // Sort alphabetically for custom routes
+      groups.sort((a, b) => a.city.localeCompare(b.city));
+    }
 
     return groups;
-  }, [
-    activeRoute,
-    routeCities,
-    fromResults.data,
-    midResults.data,
-    toResults.data,
-  ]);
+  }, [activeRoute, searchActive, stationsByCity]);
 
-  const totalActive = groupedResults.reduce(
-    (acc, g) => acc + (g.stations?.filter((s) => s.isActive).length ?? 0),
-    0,
-  );
   const totalAll = groupedResults.reduce(
     (acc, g) => acc + (g.stations?.length ?? 0),
+    0,
+  );
+  const totalActive = groupedResults.reduce(
+    (acc, g) => acc + (g.stations?.filter((s) => s.isActive).length ?? 0),
     0,
   );
 
@@ -302,7 +303,7 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
                         </Badge>
                       </>
                     )}
-                    {!isLoading && (
+                    {!loading && (
                       <span className="text-xs text-muted-foreground font-body">
                         {totalActive} active / {totalAll} total stations
                       </span>
@@ -326,7 +327,7 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
             </div>
 
             {/* Loading skeletons */}
-            {isLoading && (
+            {loading && (
               <div
                 data-ocid="route.loading_state"
                 className="px-4 sm:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
@@ -357,12 +358,12 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
             )}
 
             {/* Grouped results */}
-            {!isLoading &&
+            {!loading &&
               groupedResults.map((group) => {
-                const activeStations =
-                  group.stations?.filter((s) => s.isActive) ?? [];
-                const inactiveCount =
-                  (group.stations?.length ?? 0) - activeStations.length;
+                const groupStations = group.stations ?? [];
+                const activeCount = groupStations.filter(
+                  (s) => s.isActive,
+                ).length;
 
                 return (
                   <motion.section
@@ -382,14 +383,14 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Badge className="text-xs font-body bg-status-open-bg text-status-open border-status-open/30 font-medium">
-                          {activeStations.length} active
+                          {activeCount} active
                         </Badge>
-                        {inactiveCount > 0 && (
+                        {groupStations.length - activeCount > 0 && (
                           <Badge
                             variant="outline"
                             className="text-xs font-body text-muted-foreground"
                           >
-                            {inactiveCount} inactive
+                            {groupStations.length - activeCount} inactive
                           </Badge>
                         )}
                       </div>
@@ -397,19 +398,19 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
                     </div>
 
                     {/* Station grid or empty */}
-                    {activeStations.length === 0 ? (
+                    {groupStations.length === 0 ? (
                       <div
                         data-ocid="route.empty_state"
                         className="text-center py-10 bg-muted/40 rounded-xl border border-dashed border-border"
                       >
                         <MapPin className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground font-body">
-                          No active CNG stations found in {group.city}
+                          No CNG stations found in {group.city}
                         </p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {activeStations.map((station, idx) => (
+                        {groupStations.map((station, idx) => (
                           <StationCard
                             key={station.id.toString()}
                             station={station}
@@ -423,7 +424,7 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
               })}
 
             {/* Fully empty state (all cities returned nothing) */}
-            {!isLoading && totalAll === 0 && (
+            {!loading && totalAll === 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}

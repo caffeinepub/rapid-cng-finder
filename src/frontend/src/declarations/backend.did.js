@@ -48,6 +48,16 @@ export const idlService = IDL.Service({
     ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'deleteStation' : IDL.Func([IDL.Nat], [], []),
+  'getAllCitiesGrouped' : IDL.Func(
+      [],
+      [
+        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+      ],
+      ['query'],
+    ),
   'getAllStations' : IDL.Func([], [IDL.Vec(CNGStation)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -61,6 +71,11 @@ export const idlService = IDL.Service({
   'preloadSampleData' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'searchByCity' : IDL.Func([IDL.Text], [IDL.Vec(CNGStation)], ['query']),
+  'searchByPriceRange' : IDL.Func(
+      [IDL.Float64, IDL.Float64],
+      [IDL.Vec(CNGStation)],
+      ['query'],
+    ),
   'updateStation' : IDL.Func(
       [
         IDL.Nat,
@@ -118,6 +133,16 @@ export const idlFactory = ({ IDL }) => {
       ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'deleteStation' : IDL.Func([IDL.Nat], [], []),
+    'getAllCitiesGrouped' : IDL.Func(
+        [],
+        [
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+          IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+        ],
+        ['query'],
+      ),
     'getAllStations' : IDL.Func([], [IDL.Vec(CNGStation)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -131,6 +156,11 @@ export const idlFactory = ({ IDL }) => {
     'preloadSampleData' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'searchByCity' : IDL.Func([IDL.Text], [IDL.Vec(CNGStation)], ['query']),
+    'searchByPriceRange' : IDL.Func(
+        [IDL.Float64, IDL.Float64],
+        [IDL.Vec(CNGStation)],
+        ['query'],
+      ),
     'updateStation' : IDL.Func(
         [
           IDL.Nat,

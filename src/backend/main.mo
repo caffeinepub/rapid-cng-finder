@@ -7,6 +7,7 @@ import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 import Char "mo:core/Char";
 import Nat "mo:core/Nat";
+import Float "mo:core/Float";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
@@ -257,7 +258,7 @@ actor {
       Runtime.trap("Unauthorized: Only admins can preload data");
     };
 
-    let samples : [(Text, Text, Text, Text, Float, StationStatus, Text, Bool)] = [
+    let pakistaniSamples : [(Text, Text, Text, Text, Float, StationStatus, Text, Bool)] = [
       ("Metro Gas", "123 Main St, Karachi", "Karachi", "6 AM - 10 PM", 120.5, #open, "021-3981-5555", true),
       ("City CNG", "45 Model Town, Lahore", "Lahore", "7 AM - 9 PM", 123.0, #open, "042-2111-4321", true),
       ("Highway Gas", "200 GT Road, Multan", "Multan", "6 AM - 11 PM", 124.2, #closed, "061-8810-2222", true),
@@ -268,7 +269,29 @@ actor {
       ("Capital Gas", "14 Blue Area, Islamabad", "Islamabad", "7 AM - 11 PM", 120.1, #open, "051-9988-7332", true),
     ];
 
-    for ((name, address, city, operatingHours, pricePerKg, status, phone, isActive) in samples.vals()) {
+    let ranchiRouteSamples : [(Text, Text, Text, Text, Float, StationStatus, Text, Bool)] = [
+      ("NH33 Ranchi", "227 Kanke Road, Ranchi", "Ranchi", "7 AM - 10 PM", 88.5, #open, "0651-2267011", true),
+      ("Ramgarh CNG", "15 Main Road, Ramgarh", "Ramgarh", "6 AM - 10 PM", 89.2, #open, "06553-284088", true),
+      ("Hazaribagh Gas", "54 Market Street, Hazaribagh", "Hazaribagh", "8 AM - 9 PM", 90.0, #closed, "06546-257802", true),
+    ];
+
+    let delhiAgraRouteSamples : [(Text, Text, Text, Text, Float, StationStatus, Text, Bool)] = [
+      ("Delhi Express CNG", "1995 Ring Road, Delhi", "Delhi", "7 AM - 11 PM", 91.0, #open, "011-23889900", true),
+      ("Noida Fuel", "50 Sector 62, Noida", "Noida", "6 AM - 10 PM", 90.0, #open, "0120-3889001", true),
+      ("Mathura Roadside", "127 GT Road, Mathura", "Mathura", "24 Hours", 89.5, #open, "0565-2891247", true),
+      ("Agra City Gas", "117 MG Road, Agra", "Agra", "7 AM - 10 PM", 89.9, #closed, "0562-2359002", true),
+    ];
+
+    let mumbaiPuneRouteSamples : [(Text, Text, Text, Text, Float, StationStatus, Text, Bool)] = [
+      ("Mumbai Central", "281 Linking Road, Mumbai", "Mumbai", "6 AM - 11 PM", 92.0, #open, "022-26789002", true),
+      ("Navi Mumbai Express", "23 Sector 19, Navi Mumbai", "Navi Mumbai", "7 AM - 9 PM", 91.5, #open, "022-27477812", true),
+      ("Lonavala CNG", "1 Hill Top Road, Lonavala", "Lonavala", "24 Hours", 91.9, #open, "02114-273900", true),
+      ("Pune Gateway Gas", "99 MG Road, Pune", "Pune", "7 AM - 10 PM", 91.6, #open, "020-24375533", true),
+    ];
+
+    let allSamples = pakistaniSamples.concat(ranchiRouteSamples).concat(delhiAgraRouteSamples).concat(mumbaiPuneRouteSamples);
+
+    for ((name, address, city, operatingHours, pricePerKg, status, phone, isActive) in allSamples.vals()) {
       let station : CNGStation = {
         id = nextId;
         name;
@@ -283,5 +306,45 @@ actor {
       stationsMap.add(nextId, station);
       nextId += 1;
     };
+  };
+
+  // Get All Pakistan Cities
+  func getPakistanCities() : [Text] {
+    ["Karachi", "Lahore", "Multan", "Peshawar", "Islamabad", "Quetta", "Faisalabad"];
+  };
+
+  // Get Ranchi Route Cities (India)
+  func getRanchiRouteCities() : [Text] {
+    ["Ranchi", "Ramgarh", "Hazaribagh"];
+  };
+
+  // Get Delhi-Agra Route Cities (India)
+  func getDelhiAgraRouteCities() : [Text] {
+    ["Delhi", "Noida", "Mathura", "Agra"];
+  };
+
+  // Get Mumbai-Pune Route Cities (India)
+  func getMumbaiPuneRouteCities() : [Text] {
+    ["Mumbai", "Navi Mumbai", "Lonavala", "Pune"];
+  };
+
+  // Get All Cities Grouped
+  public query func getAllCitiesGrouped() : async ([(Text, Text)], [(Text, Text)], [(Text, Text)], [(Text, Text)]) {
+    let pakistanCities = getPakistanCities().map(func(city) { ("Pakistan", city) });
+    let ranchiRouteCities = getRanchiRouteCities().map(func(city) { ("Ranchi Route", city) });
+    let delhiAgraRouteCities = getDelhiAgraRouteCities().map(func(city) { ("Delhi-Agra Route", city) });
+    let mumbaiPuneRouteCities = getMumbaiPuneRouteCities().map(func(city) { ("Mumbai-Pune Route", city) });
+
+    (pakistanCities, ranchiRouteCities, delhiAgraRouteCities, mumbaiPuneRouteCities);
+  };
+
+  // Search by Price Range (Public - no auth required)
+  public query func searchByPriceRange(minPrice : Float, maxPrice : Float) : async [CNGStation] {
+    let filteredStations = stationsMap.values().toArray().filter(
+      func(station) {
+        station.pricePerKg >= minPrice and station.pricePerKg <= maxPrice
+      }
+    );
+    filteredStations.sort();
   };
 };
