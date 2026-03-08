@@ -16,6 +16,9 @@ export function useGetAllStations() {
       return result;
     },
     enabled: !!actor && !isFetching,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 3,
     retryDelay: 1000,
   });
@@ -33,6 +36,9 @@ export function useSearchByCity(city: string, enabled: boolean) {
       return result;
     },
     enabled: !!actor && !isFetching && enabled && city.trim().length > 0,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
     retry: 3,
     retryDelay: 1000,
   });

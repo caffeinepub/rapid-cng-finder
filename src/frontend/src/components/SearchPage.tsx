@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Route, Search, Zap } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { MapPin, RefreshCw, Route, Search, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { useGetAllStations, useSearchByCity } from "../hooks/useQueries";
@@ -14,6 +15,7 @@ export default function SearchPage() {
   const [searchInput, setSearchInput] = useState("");
   const [activeCity, setActiveCity] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const {
     data: allStations = [],
@@ -37,6 +39,12 @@ export default function SearchPage() {
 
   const handleSearch = () => {
     const trimmed = searchInput.trim();
+    // Invalidate any cached result for this city so React Query always fetches fresh data
+    if (trimmed) {
+      queryClient.invalidateQueries({
+        queryKey: ["stations", "search", trimmed],
+      });
+    }
     setActiveCity(trimmed);
   };
 
@@ -52,10 +60,15 @@ export default function SearchPage() {
 
   const popularCities = [
     "Ranchi",
-    "Hazaribagh",
     "Delhi",
     "Mumbai",
-    "Bangalore",
+    "Bengaluru",
+    "Hyderabad",
+    "Kolkata",
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Pune",
   ];
 
   return (
@@ -172,6 +185,9 @@ export default function SearchPage() {
                         type="button"
                         key={city}
                         onClick={() => {
+                          queryClient.invalidateQueries({
+                            queryKey: ["stations", "search", city],
+                          });
                           setSearchInput(city);
                           setActiveCity(city);
                         }}
@@ -292,13 +308,30 @@ export default function SearchPage() {
                     : 'No CNG stations have been added yet. Log in as admin and use "Load Sample Data" to add stations.'}
                 </p>
                 {isSearching && (
-                  <Button
-                    variant="outline"
-                    onClick={handleClear}
-                    className="mt-4 font-body text-sm"
-                  >
-                    Show all stations
-                  </Button>
+                  <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        queryClient.invalidateQueries({
+                          queryKey: ["stations"],
+                        });
+                        setActiveCity(searchInput.trim());
+                      }}
+                      data-ocid="search.secondary_button"
+                      className="font-body text-sm"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+                      Retry search
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={handleClear}
+                      data-ocid="search.cancel_button"
+                      className="font-body text-sm"
+                    >
+                      Show all stations
+                    </Button>
+                  </div>
                 )}
               </motion.div>
             )}

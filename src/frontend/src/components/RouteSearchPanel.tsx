@@ -118,28 +118,26 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
       activeRoute.to,
     ];
 
-    const groups: Array<{ city: string; stations: CNGStation[] }> = [];
+    const routeGroups: Array<{ city: string; stations: CNGStation[] }> = [];
     const seenCities = new Set<string>();
 
-    // Cities in route order
+    // Cities in route order (always first)
     for (const city of orderedCities) {
       const stations = stationsByCity.get(city) ?? [];
-      groups.push({ city, stations });
+      routeGroups.push({ city, stations });
       seenCities.add(city);
     }
 
-    // For custom routes (no preset), also show all other cities that have stations
-    if (!preset) {
-      for (const [city, stations] of stationsByCity.entries()) {
-        if (!seenCities.has(city)) {
-          groups.push({ city, stations });
-        }
+    // Always append ALL remaining cities that have stations, sorted alphabetically
+    const remainingGroups: Array<{ city: string; stations: CNGStation[] }> = [];
+    for (const [city, stations] of stationsByCity.entries()) {
+      if (!seenCities.has(city)) {
+        remainingGroups.push({ city, stations });
       }
-      // Sort alphabetically for custom routes
-      groups.sort((a, b) => a.city.localeCompare(b.city));
     }
+    remainingGroups.sort((a, b) => a.city.localeCompare(b.city));
 
-    return groups;
+    return [...routeGroups, ...remainingGroups];
   }, [activeRoute, searchActive, stationsByCity]);
 
   const totalAll = groupedResults.reduce(
@@ -303,9 +301,16 @@ export default function RouteSearchPanel({ autoLoad }: RouteSearchPanelProps) {
                         </Badge>
                       </>
                     )}
-                    {!loading && (
+                    {!loading && totalAll > 0 && (
                       <span className="text-xs text-muted-foreground font-body">
-                        {totalActive} active / {totalAll} total stations
+                        {activeRoute.preset
+                          ? `${totalAll} stations — route cities listed first`
+                          : `${totalActive} active / ${totalAll} total stations`}
+                      </span>
+                    )}
+                    {!loading && totalAll === 0 && (
+                      <span className="text-xs text-muted-foreground font-body">
+                        0 stations found
                       </span>
                     )}
                   </div>
